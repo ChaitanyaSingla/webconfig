@@ -73,9 +73,9 @@ func awsKeyspaceClient(conf *configuration.Config, testOnly bool) (*CassandraCli
 		}
 
 		s, _ := sess.Config.Credentials.Get()
-		fmt.Println("Secret key: ", s.SecretAccessKey)
-		fmt.Println("Access key: ", s.AccessKeyID)
-		fmt.Println("Session token: ", s.SessionToken)
+		fmt.Println("Secret key keyspace: ", s.SecretAccessKey)
+		fmt.Println("Access key keyspace: ", s.AccessKeyID)
+		fmt.Println("Session token keyspace: ", s.SessionToken)
 
 		// Set up the callback to refresh credentials
 		auth.CredentialsCallback = func() (sigv4.SigV4Credentials, error) {
