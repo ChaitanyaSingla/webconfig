@@ -23,8 +23,8 @@ func NewKmsClient(conf *configuration.Config) (*kms.KMS, error) {
 	}
 
 	awsConfig := &aws.Config{
-		Region:   aws.String(awsRegion),
-		Endpoint: aws.String(awsEndpoint),
+		Region: aws.String(awsRegion),
+		// Endpoint: aws.String(awsEndpoint),
 	}
 
 	roleBasedAccessEnabled := conf.GetBoolean("webconfig.security.kms.role_based_access_enabled")
