@@ -40,6 +40,11 @@ func NewKmsClient(conf *configuration.Config) (*kms.KMS, error) {
 		return nil, err
 	}
 
+	s, _ := sess.Config.Credentials.Get()
+	fmt.Println("Secret key: ", s.SecretAccessKey)
+	fmt.Println("Access key: ", s.AccessKeyID)
+	fmt.Println("Session token: ", s.SessionToken)
+
 	return kms.New(sess), nil
 }
 
