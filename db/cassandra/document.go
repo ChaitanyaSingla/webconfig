@@ -227,6 +227,7 @@ func (c *CassandraClient) GetDocument(cpeMac string, xargs ...interface{}) (fndo
 	}
 
 	doc := common.NewDocument(nil)
+	fmt.Println("doc 1 ", doc)
 
 	c.concurrentQueries <- true
 	defer func() { <-c.concurrentQueries }()
@@ -261,9 +262,11 @@ func (c *CassandraClient) GetDocument(cpeMac string, xargs ...interface{}) (fndo
 		var updatedTime, expiry time.Time
 		var updatedTimeTsPtr *int
 
+		fmt.Println("scanning data")
 		if !iter.Scan(&groupId, &payload, &version, &state, &updatedTime, &errorCode, &errorDetails, &expiry, &kmsRemoteDataKey) {
 			break
 		}
+		fmt.Println("Scanned data", payload)
 
 		// build the logging obj
 		row := util.Dict{
@@ -281,12 +284,14 @@ func (c *CassandraClient) GetDocument(cpeMac string, xargs ...interface{}) (fndo
 		rmap[groupId] = row
 
 		if len(payload) == 0 {
+			fmt.Println("Payload length is zero")
 			continue
 		}
 
 		if c.IsEncryptedGroup(groupId) {
 			payload, err = c.DecryptBytes(payload, kmsRemoteDataKey)
 			if err != nil {
+				fmt.Println("Error while decrypting")
 				tfields := common.FilterLogFields(fields)
 				tfields["logger"] = "subdoc"
 				tfields["subdoc_id"] = groupId
@@ -302,10 +307,12 @@ func (c *CassandraClient) GetDocument(cpeMac string, xargs ...interface{}) (fndo
 		subdoc := common.NewSubDocument(payload, &version, &state, updatedTimeTsPtr, &errorCode, &errorDetails)
 		// REMINDER, need this operation to detect if the "expiry" column is null/empty
 		if !expiry.IsZero() {
+			fmt.Println("If expiry is not zero")
 			if x := int(expiry.UnixNano() / 1000000); x > 0 {
 				// eval subdocs with expiry
 				if !includeExpiry {
 					if expiry.Before(now) {
+						fmt.Println("expirteddddd")
 						continue
 					}
 				}
