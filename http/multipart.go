@@ -55,6 +55,7 @@ func (s *WebconfigServer) MultipartConfigHandler(w http.ResponseWriter, r *http.
 	params := mux.Vars(r)
 	mac, ok := params["mac"]
 	if !ok {
+		fmt.Println("Mac is not present")
 		Error(w, http.StatusNotFound, nil)
 		return
 	}
@@ -100,6 +101,7 @@ func (s *WebconfigServer) MultipartConfigHandler(w http.ResponseWriter, r *http.
 
 	switch status {
 	case http.StatusNotFound:
+		fmt.Println("Status is not found")
 		Error(w, status, nil)
 		return
 	case http.StatusConflict:
@@ -155,6 +157,7 @@ func BuildWebconfigResponse(s *WebconfigServer, ctx context.Context, rHeader htt
 			if !s.IsDbNotFound(err) {
 				return http.StatusInternalServerError, respHeader, nil, common.NewError(err)
 			}
+			fmt.Println("db not found error", err)
 			return http.StatusNotFound, respHeader, nil, common.NewError(err)
 		}
 
@@ -223,6 +226,7 @@ func BuildWebconfigResponse(s *WebconfigServer, ctx context.Context, rHeader htt
 		}
 		respStatus = http.StatusOK
 	} else if len(document.RootVersion()) == 0 {
+		fmt.Println("root version is zero")
 		respStatus = http.StatusNotFound
 	}
 
@@ -360,6 +364,7 @@ func BuildFactoryResetResponse(s *WebconfigServer, ctx context.Context, rHeader 
 	document, err := c.GetDocument(mac, fields)
 	if err != nil {
 		if s.IsDbNotFound(err) {
+			fmt.Println("db not found error 2", err)
 			return http.StatusNotFound, respHeader, nil, nil
 		} else {
 			return http.StatusInternalServerError, respHeader, nil, common.NewError(err)
@@ -444,6 +449,7 @@ func BuildFactoryResetResponse(s *WebconfigServer, ctx context.Context, rHeader 
 	}
 
 	if finalDocument.Length() == 0 {
+		fmt.Println("final document length = 0")
 		return http.StatusNotFound, upstreamRespHeader, nil, nil
 	}
 
