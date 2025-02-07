@@ -29,7 +29,7 @@ const (
 )
 
 var (
-	MultipartContentType = fmt.Sprintf("application/json; boundary=%s", Boundary)
+	MultipartContentType = fmt.Sprintf("application/msgpack; boundary=%s", Boundary)
 )
 
 func WriteMultipartBytes(mparts []Multipart) ([]byte, error) {
