@@ -131,14 +131,14 @@ func BuildWebconfigResponse(s *WebconfigServer, ctx context.Context, rHeader htt
 	userAgent := rHeader.Get("User-Agent")
 
 	// factory reset handling
-	ifNoneMatch := rHeader.Get(common.HeaderIfNoneMatch)
-	if ifNoneMatch == "NONE" || ifNoneMatch == "NONE-REBOOT" {
-		status, respHeader, rbytes, err := BuildFactoryResetResponse(s, ctx, rHeader, fields)
-		if err != nil {
-			return status, respHeader, rbytes, common.NewError(err)
-		}
-		return status, respHeader, rbytes, nil
-	}
+	// ifNoneMatch := rHeader.Get(common.HeaderIfNoneMatch)
+	// if ifNoneMatch == "NONE" || ifNoneMatch == "NONE-REBOOT" {
+	// 	status, respHeader, rbytes, err := BuildFactoryResetResponse(s, ctx, rHeader, fields)
+	// 	if err != nil {
+	// 		return status, respHeader, rbytes, common.NewError(err)
+	// 	}
+	// 	return status, respHeader, rbytes, nil
+	// }
 
 	document, oldRootDocument, newRootDocument, deviceVersionMap, postUpstream, messages, err := db.BuildGetDocument(c, rHeader, route, fields)
 	if s.KafkaProducerEnabled() && s.StateCorrectionEnabled() && len(messages) > 0 {
