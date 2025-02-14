@@ -205,10 +205,26 @@ func (c *CassandraClient) DeleteDocument(cpeMac string) error {
 	defer func() { <-c.concurrentQueries }()
 
 	if c.awsKeyspaceEnabled {
-		encryptedSubdocIDs := []string{"privatessid", "homessid", "telcovoip", "voiceservice"}
-		for _, subdocID := range encryptedSubdocIDs {
+		// encryptedSubdocIDs := []string{"privatessid", "homessid", "telcovoip", "voiceservice"}
+		// for _, subdocID := range encryptedSubdocIDs {
+		// 	stmt := "DELETE FROM xpc_group_config WHERE cpe_mac=? AND group_id=?"
+		// 	if err := c.Query(stmt, cpeMac, subdocID).Exec(); err != nil {
+		// 		return common.NewError(err)
+		// 	}
+		// }
+
+		stmt := "SELECT group_id FROM xpc_group_config WHERE cpe_mac=?"
+		if c.awsKeyspaceEnabled {
+			stmt += " ALLOW FILTERING"
+		}
+		iter := c.Query(stmt, cpeMac).Iter()
+		for {
+			var groupId string
+			if !iter.Scan(&groupId) {
+				break
+			}
 			stmt := "DELETE FROM xpc_group_config WHERE cpe_mac=? AND group_id=?"
-			if err := c.Query(stmt, cpeMac, subdocID).Exec(); err != nil {
+			if err := c.Query(stmt, cpeMac, groupId).Exec(); err != nil {
 				return common.NewError(err)
 			}
 		}
